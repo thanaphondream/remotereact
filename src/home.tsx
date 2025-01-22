@@ -1,57 +1,28 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import {AsyncStorage} from 'react-native';
 
 function Home() {
   const [csvData, setCsvData] = useState([]);
-  const [jsonData, setJsonData] = useState([]); // To store JSON data
-  const navigate = useNavigate();
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  // ฟังก์ชันที่ใช้สำหรับอัพโหลดไฟล์ .csv
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
     if (file && file.type === 'text/csv') {
       const reader = new FileReader();
-
-      reader.onload = async (e) => {
-        const text = e.target.result;
-        processCsvData(text);
+      reader.onload = () => {
+        const text = reader.result;
+        const rows = text.split('\n').map((row) => row.split(','));
+        setCsvData(rows); // เก็บข้อมูลลงใน state
       };
-
       reader.readAsText(file);
     } else {
       alert('Please upload a valid CSV file.');
     }
   };
 
-  const processCsvData = async (data) => {
-    const rows = data.split('\n').map((row) => row.split(','));
-    setCsvData(rows);
-
-    // Convert CSV rows to JSON objects
-    const headers = rows[0];
-    const jsonObjects = rows.slice(1).map((row) => {
-      const obj = {};
-      row.forEach((cell, index) => {
-        obj[headers[index]] = cell;
-      });
-      return obj;
-    });
-
-    setJsonData(jsonObjects);
-
-    try {
-      // Save the data to the API
-      const response = await axios.post('https://jsonplaceholder.typicode.com/todos/', jsonObjects);
-      console.log('Data saved successfully:', response.data);
-      alert('Data saved successfully!');
-    } catch (error) {
-      console.error('Error saving data:', error);
-      alert('Failed to save data.');
-    }
-  };
-
+  // ฟังก์ชันที่ใช้ในการเปิดข้อมูล
   const fnLIn = () => {
-    navigate('/ShowData', { state: { jsonData } }); // Navigate to ShowData with JSON data
+    console.log(csvData); // สามารถดูข้อมูลใน console
   };
 
   return (

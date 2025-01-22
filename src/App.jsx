@@ -4,9 +4,11 @@ import './App.css';
 import Home from './home';
 
 function Login() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('voigkgky@gmail.com');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  // setEmail('voigkgky@gmail.com')
 
   const handleLogin = () => {
     if (email === 'voigkgky@gmail.com' && password === '123456') {
